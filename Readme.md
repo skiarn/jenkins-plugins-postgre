@@ -1,7 +1,6 @@
-#### Postgres installation using docker.
-  see tutorial: https://docs.docker.com/examples/postgresql_service/
-  docker build -t jenkins-plugins-postgre .
-  or get directly using: docker build -t="dockerfile/jenkins-plugins-postgre" github.com/skiarn/jenkins-plugins-postgre
+## Postgres installation using docker.
+  
+  ```docker build -t="dockerfile/jenkins-plugins-postgre" github.com/skiarn/jenkins-plugins-postgre```
   
   run in foreground.
   docker run --rm -P --name pg_jenkins-plugins jenkins-plugins-postgre
