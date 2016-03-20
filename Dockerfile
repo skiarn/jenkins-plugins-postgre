@@ -32,26 +32,26 @@ RUN pg_createcluster --locale=sv_SE.UTF-8 --start 9.3 main
 # Run the rest of the commands as the ``postgres`` user created by the ``postgres-9.3`` package when it was ``apt-get installed``
 USER postgres
 
-# Create a PostgreSQL role named ``jenkins-plugins`` with ``jenkins-plugins`` as the password and
-# then create a database `jenkins-plugins` owned by the ``jenkins-plugins`` role.
+# Create a PostgreSQL role named ``jenkinsplugins`` with ``jenkinsplugins`` as the password and
+# then create a database `jenkinsplugins` owned by the ``jenkinsplugins`` role.
 # Note: here we use ``&&\`` to run commands one after the other - the ``\``
 #       allows the RUN command to span multiple lines.
 RUN /etc/init.d/postgresql start &&\
-    psql --command "CREATE USER jenkins-plugins WITH SUPERUSER PASSWORD 'jenkins-plugins';" &&\
-    createdb -E 'UTF8' -O jenkins-plugins jenkins-plugins &&\
-    psql --command "CREATE ROLE jenkins-plugins_anv WITH LOGIN PASSWORD 'jenkins-plugins_anv' NOSUPERUSER;"
+    psql --command "CREATE USER jenkinsplugins WITH SUPERUSER PASSWORD 'jenkinsplugins';" &&\
+    createdb -E 'UTF8' -O jenkinsplugins jenkinsplugins &&\
+    psql --command "CREATE ROLE jenkinsplugins_anv WITH LOGIN PASSWORD 'jenkinsplugins_anv' NOSUPERUSER;"
 
 RUN /etc/init.d/postgresql start &&\
-    psql --command "CREATE SCHEMA IF NOT EXISTS application AUTHORIZATION jenkins-plugins_anv;" &&\
+    psql --command "CREATE SCHEMA IF NOT EXISTS application AUTHORIZATION jenkinsplugins_anv;" &&\
     psql --command "CREATE TABLE application.category (id serial primary key, category varying(255) UNIQUE NOT NULL, createdAt NOT NULL DEFAULT now()::date);" &&\
     psql --command "CREATE TABLE application.plugin (id serial primary key, name character varying(255) UNIQUE NOT NULL, updatedAt timestamp without time zone NOT NULL);" &&\
     psql --command "CREATE TABLE application.category_plugin(category_id int REFERENCES category (id) ON UPDATE CASCADE, plugin_id int REFERENCES plugin (id) ON UPDATE CASCADE ON DELETE CASCADE, CONSTRAINT category_plugin PRIMARY KEY (category_id, plugin_id));"
 
 RUN /etc/init.d/postgresql start &&\
-    psql --command "GRANT SELECT, INSERT, DELETE ON TABLE application.category TO jenkins-plugins_anv;"  &&\
-    psql --command "GRANT SELECT, INSERT, DELETE ON TABLE application.plugin TO jenkins-plugins_anv;"  &&\
-    psql --command "GRANT SELECT, INSERT, DELETE ON TABLE application.category_plugin TO jenkins-plugins_anv;" &&\
-    psql --command "GRANT USAGE, SELECT, INSERT, DELETE ON ALL SEQUENCES IN SCHEMA application to jenkins-plugins_anv;"
+    psql --command "GRANT SELECT, INSERT, DELETE ON TABLE application.category TO jenkinsplugins_anv;"  &&\
+    psql --command "GRANT SELECT, INSERT, DELETE ON TABLE application.plugin TO jenkinsplugins_anv;"  &&\
+    psql --command "GRANT SELECT, INSERT, DELETE ON TABLE application.category_plugin TO jenkinsplugins_anv;" &&\
+    psql --command "GRANT USAGE, SELECT, INSERT, DELETE ON ALL SEQUENCES IN SCHEMA application to jenkinsplugins_anv;"
 
 
 
