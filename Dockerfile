@@ -43,15 +43,15 @@ RUN /etc/init.d/postgresql start &&\
 
 RUN /etc/init.d/postgresql start &&\
     psql --command "CREATE SCHEMA IF NOT EXISTS application AUTHORIZATION jenkinsplugins_anv;" &&\
-    psql --command "CREATE TABLE application.category (id serial primary key, category varying(255) UNIQUE NOT NULL, createdAt NOT NULL DEFAULT now()::date);" &&\
+    psql --command "CREATE TABLE application.category (id serial primary key, category character varying(255) UNIQUE NOT NULL, createdAt date NOT NULL DEFAULT now()::date);" &&\
     psql --command "CREATE TABLE application.plugin (id serial primary key, name character varying(255) UNIQUE NOT NULL, updatedAt timestamp without time zone NOT NULL);" &&\
-    psql --command "CREATE TABLE application.category_plugin(category_id int REFERENCES category (id) ON UPDATE CASCADE, plugin_id int REFERENCES plugin (id) ON UPDATE CASCADE ON DELETE CASCADE, CONSTRAINT category_plugin PRIMARY KEY (category_id, plugin_id));"
+    psql --command "CREATE TABLE application.category_plugin(category_id int REFERENCES application.category (id) ON UPDATE CASCADE, plugin_id int REFERENCES application.plugin (id) ON UPDATE CASCADE ON DELETE CASCADE, CONSTRAINT category_plugin_pkey PRIMARY KEY (category_id, plugin_id));"
 
 RUN /etc/init.d/postgresql start &&\
     psql --command "GRANT SELECT, INSERT, DELETE ON TABLE application.category TO jenkinsplugins_anv;"  &&\
     psql --command "GRANT SELECT, INSERT, DELETE ON TABLE application.plugin TO jenkinsplugins_anv;"  &&\
     psql --command "GRANT SELECT, INSERT, DELETE ON TABLE application.category_plugin TO jenkinsplugins_anv;" &&\
-    psql --command "GRANT USAGE, SELECT, INSERT, DELETE ON ALL SEQUENCES IN SCHEMA application to jenkinsplugins_anv;"
+    psql --command "GRANT USAGE, SELECT ON ALL SEQUENCES IN SCHEMA application to jenkinsplugins_anv;"
 
 
 
